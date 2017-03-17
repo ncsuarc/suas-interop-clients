@@ -29,10 +29,9 @@ class InterOp(object):
         response = self.session.post("http://%s:%s/api/login"%(self.ip, self.port), data = payload, timeout = 5)
         print(response.text)
 
-    def server_info(self):
-        server_info = self.session.get('http://%s:%s/api/server_info'%(self.ip, self.port))
-        #print(server_info.json())
-        print(server_info.text)
+    def get_missions(self):
+        missions = self.session.get('http://%s:%s/api/missions'%(self.ip, self.port))
+        return missions.json()
 
     def get_obstacles(self):
         obstacles = self.session.get('http://%s:%s/api/obstacles'%(self.ip, self.port))
@@ -52,7 +51,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     #print(username, password, ip)
     io = InterOp(args.username, args.password, args.ip, args.port)
-    #io.server_info()
     #io.get_obstacles()
     #io.send_coord()
     try:
@@ -75,7 +73,9 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         pass
     finally:
-        io.server_info()
+        missions = io.get_missions()
+        print('\nMissions')
+        print(missions)
         obstacles = io.get_obstacles()
         print(obstacles)
         print('\nStationary')
