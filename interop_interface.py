@@ -8,7 +8,7 @@ import datetime
 import argparse
 import sys
 
-from interop import InterOp
+from ARC.interop import Interop
 
 piccolo_pub = "ipc:///tmp/piccolo_pub"
 
@@ -18,13 +18,7 @@ def generate_lat_lon(telem):
     return telem.sensors.gps.lat, telem.sensors.gps.lon, (telem.sensors.gps.alt*3.28084), (telem.sensors.gps.heading*57.2958)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-u","--username", required=True)
-    parser.add_argument("-p","--password", required=True)
-    parser.add_argument("-ip","--ip", required=True)
-    parser.add_argument("-port","--port", required=True)
-    args = parser.parse_args()
-    io = InterOp(args.username, args.password, args.ip, args.port)
+    io = Interop()
     try:
         zmq_context = zmq.Context()
 
