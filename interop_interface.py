@@ -45,25 +45,5 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         pass
     finally:
-        missions = io.get_missions()
-        print('\nMission 0')
-        print(missions[0])
-
-        print('\nEmergent')
-        print(missions[0].get('emergent_last_known_pos'))
-
-        print('\nOff-Axis')
-        print(missions[0].get('off_axis_target_pos'))
-
-        print('\nAir Drop')
-        print(missions[0].get('air_drop_pos'))
-
-        obstacles = io.get_obstacles()
-        print('\nStationary')
-        print(obstacles)
-        print('\nStationary')
-        print(obstacles.get('stationary_obstacles'))
-        print('\nMoving')
-        print(obstacles.get('moving_obstacles'))
         piccolo.close()
         zmq_context.term()
