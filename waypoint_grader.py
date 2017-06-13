@@ -49,12 +49,14 @@ def csv_to_waypoints(file):
             waypoints.append(Waypoint(float(row[0]), float(row[1]), float(row[2])))
         return waypoints
 
-def waypoint_check(waypoints):
+def waypoint_check(waypoints, max_dist=100, max_alt_delta=100):
     """
-    Checks that the plane flies the waypoints in order and within 50 ft
+    Checks that the plane flies the waypoints in order and within the specified deltas
 
     Arguments:
         waypoints: list of waypoints
+        max_dist: the maximum distance the plane can be from the waypoint to capture it
+        max_alt_delta: the maximum altitude difference between the waypoint and the plane to capture
 
     Returns:
         None
@@ -85,7 +87,7 @@ def waypoint_check(waypoints):
                 dist = math.sqrt(delta[0]**2 + delta[1]**2)
                 dist = uc.m_to_ft(dist)
                 alt_delta = abs(waypoint.alt - air_alt)
-                if dist < 50 and alt_delta < 50:
+                if dist < max_dist and alt_delta < max_alt_delta:
                     print("~~~~~~~~~WAYPOINT MET~~~~~~~~~~")
                     good = True
                 print(dist, alt_delta)
