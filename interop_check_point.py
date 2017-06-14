@@ -1,13 +1,9 @@
 import argparse 
 from osgeo import ogr
-from interop import InterOp
+from ARC.interop import Interop
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-u","--username", required=True)
-    parser.add_argument("-p","--password", required=True)
-    parser.add_argument("-ip","--ip", required=True)
-    parser.add_argument("-port","--port", required=True)
     parser.add_argument("-lat","--lat", required=True, type=float)
     parser.add_argument("-lon","--lon", required=True, type=float)
     args = parser.parse_args()
@@ -15,7 +11,7 @@ if __name__ == "__main__":
     target_point = ogr.Geometry(ogr.wkbPoint)
     target_point.AddPoint(args.lat,args.lon)
 
-    io = InterOp(args.username, args.password, args.ip, args.port)
+    io = Interop()
     missions = io.get_missions()
     for mission in missions:
         if bool(mission.get('active')):
