@@ -10,7 +10,7 @@ import sys
 
 from ARC.interop import Interop
 
-piccolo_pub = "ipc:///tmp/piccolo_pub"
+telemetry_pub = "ipc:///tmp/mavlink_pub"
 
 
 
@@ -22,15 +22,15 @@ if __name__ == "__main__":
     try:
         zmq_context = zmq.Context()
 
-        # Subscribe to Piccolo data
-        piccolo = zmq_context.socket(zmq.SUB)
-        piccolo.connect(piccolo_pub)
-        piccolo.setsockopt(zmq.SUBSCRIBE, "")
+        # Subscribe to telemetry data
+        telemetry = zmq_context.socket(zmq.SUB)
+        telemetry.connect(telemetry_pub)
+        telemetry.setsockopt(zmq.SUBSCRIBE, "")
         while True:
             #get the telemetry packet
-            packet = piccolo.recv_json()
+            packet = telemetry.recv_json()
             telem = ARC.Telemetry(packet["telemetry"])
-            
+
             #generate and print the NMEA sentences
             lat, lon, alt, heading = generate_lat_lon(telem)
 
@@ -39,5 +39,5 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         pass
     finally:
-        piccolo.close()
+        telemetry.close()
         zmq_context.term()

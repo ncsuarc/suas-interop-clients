@@ -7,7 +7,8 @@ import csv
 import pyproj
 import math
 
-piccolo_pub = 'ipc:///tmp/piccolo_pub'
+telemetry_pub = 'ipc:///tmp/mavlink_pub'
+
 
 class Waypoint():
     def __init__(self, lat, lon, alt):
@@ -15,12 +16,13 @@ class Waypoint():
         self.lon = lon
         self.alt = alt
 
+
 def generate_lat_lon(telem):
     """
     Looks up the needed data from the telemetry packet
 
     Arguments:
-        telem: piccolo telemetry packet
+        telem: telemetry packet
 
     Returns:
         lat: gps latitude
@@ -31,6 +33,7 @@ def generate_lat_lon(telem):
     lon = telem.sensors.gps.lon
     alt = uc.m_to_ft(telem.sensors.gps.alt)
     return lat, lon, alt
+
 
 def csv_to_waypoints(file):
     """
@@ -49,6 +52,7 @@ def csv_to_waypoints(file):
             waypoints.append(Waypoint(float(row[0]), float(row[1]), float(row[2])))
         return waypoints
 
+
 def waypoint_check(waypoints, max_dist=100, max_alt_delta=100):
     """
     Checks that the plane flies the waypoints in order and within the specified deltas
@@ -63,9 +67,9 @@ def waypoint_check(waypoints, max_dist=100, max_alt_delta=100):
     """
     try:
         zmq_context = zmq.Context()
-        piccolo = zmq_context.socket(zmq.SUB)
-        piccolo.connect(piccolo_pub)
-        piccolo.setsockopt(zmq.SUBSCRIBE, "")
+        telemetry = zmq_context.socket(zmq.SUB)
+        telemetry.connect(telemetry_pub)
+        telemetry.setsockopt(zmq.SUBSCRIBE, "")
         for waypoint in waypoints:
             good = False
             print(waypoint.lat, waypoint.lon)
@@ -75,7 +79,7 @@ def waypoint_check(waypoints, max_dist=100, max_alt_delta=100):
                                             waypoint.lon,
                                             waypoint.lat)
             while good == False:
-                packet = piccolo.recv_json()
+                packet = telemetry.recv_json()
                 telem = ARC.Telemetry(packet["telemetry"])
                 air_lat, air_lon, air_alt = generate_lat_lon(telem)
                 air_coord = pyproj.transform(ARC.presets.wgs84,
@@ -94,8 +98,9 @@ def waypoint_check(waypoints, max_dist=100, max_alt_delta=100):
     except KeyboardInterrupt:
         pass
     finally:
-        piccolo.close()
+        telemetry.close()
         zmq_context.term()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Judges waypoint accuracy')
