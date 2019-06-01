@@ -3,6 +3,7 @@ import json
 import sys
 import zmq
 import ARC
+import ARC.unitconversion as uc
 import math
 import datetime
 import argparse
@@ -13,9 +14,22 @@ from ARC.interop import Interop
 telemetry_pub = "ipc:///tmp/mavlink_pub"
 
 
-
 def generate_lat_lon(telem):
-    return telem.sensors.gps.lat, telem.sensors.gps.lon, (telem.sensors.gps.alt*3.28084), (telem.sensors.gps.heading*57.2958)
+    '''
+    Return a tuple of coordinates from a specific ARC.Telemery.
+
+    Args:
+        telem (ARC.Telemetry): The telemetry datapoint to find the
+            coordinates of.
+
+    Returns:
+        float: Latitude (degrees).
+        float: Longitude (degrees).
+        float: MSL Altitude (feet).
+        float: Heading from north (degrees).
+    '''
+    return telem.sensors.gps.lat, telem.sensors.gps.lon, uc.m_to_ft(telem.sensors.gps.alt), math.degrees(telem.sensors.gps.heading)
+
 
 if __name__ == "__main__":
     io = Interop()
@@ -27,11 +41,11 @@ if __name__ == "__main__":
         telemetry.connect(telemetry_pub)
         telemetry.setsockopt(zmq.SUBSCRIBE, "")
         while True:
-            #get the telemetry packet
+            # get the telemetry packet
             packet = telemetry.recv_json()
             telem = ARC.Telemetry(packet["telemetry"])
 
-            #generate and print the NMEA sentences
+            # generate and print the NMEA sentences
             lat, lon, alt, heading = generate_lat_lon(telem)
 
             io.send_coord(lat, lon, alt, heading)
