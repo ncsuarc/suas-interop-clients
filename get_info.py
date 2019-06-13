@@ -29,7 +29,7 @@ if __name__ == "__main__":
         saveData = False
     io = Interop()
 
-    missions = io.get_missions()
+    mission = io.get_missions()
     if saveData:
         if not os.path.isdir(saveDir):
             if os.path.exists(saveDir):
@@ -37,35 +37,29 @@ if __name__ == "__main__":
             else:
                 os.mkdir(saveDir)
         with open(os.path.join(saveDir, 'missions.txt'), 'w') as mission_file:
-            mission_file.write(json.dumps(missions))
+            mission_file.write(json.dumps(mission))
 
-    for mission in missions:
-        if bool(mission.get('active')):
-            active_mission = mission
-            break
-
+    active_mission = mission
     print('\nEmergent')
-    print(active_mission.get('emergent_last_known_pos'))
+    print(active_mission.get('emergentLastKnownPos'))
 
     print('\nOff-Axis')
-    print(active_mission.get('off_axis_target_pos'))
+    print(active_mission.get('offAxisOdlcPos'))
 
     print('\nAir Drop')
-    print(active_mission.get('air_drop_pos'))
+    print(active_mission.get('airDropPos'))
 
     if args.csv:
         with open(args.csv, 'w') as csvFile:
             csvWriter = csv.writer(csvFile)
-            interop_waypoints = active_mission.get('search_grid_points')
-            waypoints = [None] * len(interop_waypoints)
+            interop_waypoints = active_mission.get('waypoints')
 
             for point in interop_waypoints:
-                waypoints[point.get('order') - 1] = [point.get('latitude'), point.get('longitude'), point.get('altitude_msl')]
-            for point in waypoints:
-                csvWriter.writerow(point)
+                csvWriter.writerow([point['latitude'], point['longitude'], point['altitude']])
 
-    obstacles = io.get_obstacles()
-    if saveData:
+    #obstacles = io.get_obstacles()
+    if False:
+    #if saveData:
         with open(os.path.join(saveDir, 'stationary.txt'), 'w') as stationary_file:
             stationary_file.write(json.dumps(obstacles.get('stationary_obstacles')))
         with open(os.path.join(saveDir, 'moving.txt'), 'w') as moving_file:

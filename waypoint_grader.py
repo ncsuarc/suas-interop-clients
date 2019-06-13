@@ -9,7 +9,6 @@ import math
 
 telemetry_pub = 'ipc:///tmp/mavlink_pub'
 
-
 class Waypoint():
     def __init__(self, lat, lon, alt):
         self.lat = lat
@@ -80,7 +79,12 @@ def waypoint_check(waypoints, max_dist=100, max_alt_delta=100):
                                             waypoint.lat)
             while good == False:
                 packet = telemetry.recv_json()
-                telem = ARC.Telemetry(packet["telemetry"])
+                try:
+                    telem = ARC.Telemetry(packet["telemetry"])
+                except Exception as e:
+                    print("error", e)
+                    continue
+
                 air_lat, air_lon, air_alt = generate_lat_lon(telem)
                 air_coord = pyproj.transform(ARC.presets.wgs84,
                                                 way_location.projection,

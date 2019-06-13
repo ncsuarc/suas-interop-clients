@@ -1,5 +1,6 @@
 import requests
 import sys
+import json
 if (sys.version_info > (3, 0)):
     from PyQt5.QtCore import QSettings
 else:
@@ -20,11 +21,12 @@ class Interop(object):
         password = str(settings.value('password'))
 
         payload = {'username': username, 'password': password}
+        payload = json.dumps(payload)
         self.session.post("http://%s:%s/api/login"%(self.host, self.port),
-                          data=payload, timeout=5).raise_for_status()
+                          data=payload).raise_for_status()
 
-    def get_missions(self):
-        missions = self.session.get('http://%s:%s/api/missions'%(self.host, self.port))
+    def get_missions(self, mission_id=1):
+        missions = self.session.get('http://%s:%s/api/missions/%s'%(self.host, self.port, mission_id))
         missions.raise_for_status()
         return missions.json()
 
@@ -39,9 +41,12 @@ class Interop(object):
         return targets.json()
 
     def delete_target(self, i):
-        self.session.delete('http://%s:%s/api/targets/%d/image'
-                            %(self.host, self.port, i)).raise_for_status()
-        self.session.delete('http://%s:%s/api/targets/%d'
+        try:
+            self.session.delete('http://%s:%s/api/odlcs/%d/image'
+                                %(self.host, self.port, i)).raise_for_status()
+        except Exception as e:
+            print(repr(e))
+        self.session.delete('http://%s:%s/api/odlcs/%d'
                             %(self.host, self.port, i)).raise_for_status()
 
     def post_target(self, target_json, image):
@@ -56,6 +61,7 @@ class Interop(object):
         return target_id
 
     def send_coord(self, lat, lon, alt, heading):
-        coord = {'latitude': lat, 'longitude': lon, 'altitude_msl': alt, 'uas_heading': heading}
+        coord = {'latitude': lat, 'longitude': lon, 'altitude': alt, 'heading': heading}
+        coord = json.dumps(coord)
         plane_location = self.session.post("http://%s:%s/api/telemetry"%(self.host, self.port), data = coord)
         plane_location.raise_for_status()

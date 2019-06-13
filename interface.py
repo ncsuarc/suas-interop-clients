@@ -13,7 +13,6 @@ from ARC.interop import Interop
 
 telemetry_pub = "ipc:///tmp/mavlink_pub"
 
-
 def generate_lat_lon(telem):
     '''
     Return a tuple of coordinates from a specific ARC.Telemery.
@@ -47,6 +46,7 @@ if __name__ == "__main__":
 
             # generate and print the NMEA sentences
             lat, lon, alt, heading = generate_lat_lon(telem)
+            print(lat, lon, alt, heading)
 
             io.send_coord(lat, lon, alt, heading)
             sys.stdout.flush()
