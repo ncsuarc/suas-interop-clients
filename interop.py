@@ -53,7 +53,12 @@ class Interop(object):
         target_data = self.session.post('http://%s:%s/api/targets'
                                         %(self.host, self.port),
                                         json=target_json)
-        target_data.raise_for_status()
+        try:
+            target_data.raise_for_status()
+        except:
+            print(target_data.text)
+            raise
+
         target_id = target_data.json().get('id')
         self.session.post('http://%s:%s/api/targets/%d/image'
                           %(self.host, self.port, target_id),

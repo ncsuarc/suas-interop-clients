@@ -17,6 +17,18 @@ if __name__ == "__main__":
                 name = objfile.split('.')[0]
                 with open(os.path.join(args.directory, objfile), 'r') as json_file:
                     json_data = json.load(json_file)
+                    json_data = {
+                        "mission": 1,
+                        "type": json_data["type"].upper(),
+                        "latitude": json_data["latitude"],
+                        "longitude": json_data["longitude"],
+                        "orientation": json_data["orientation"].upper(),
+                        "shape": json_data["shape"].upper(),
+                        "shapeColor": json_data["background_color"].upper(),
+			"alphanumeric": json_data["alphanumeric"],
+			"alphanumericColor": json_data["alphanumeric_color"].upper(),
+                        "autonomous": False
+                    }
                 with open(os.path.join(args.directory, name + '.jpg'), 'rb') as image_data:
                     io.post_target(json_data, image_data)
     except KeyboardInterrupt:

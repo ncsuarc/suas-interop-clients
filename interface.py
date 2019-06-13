@@ -27,7 +27,7 @@ def generate_lat_lon(telem):
         float: MSL Altitude (feet).
         float: Heading from north (degrees).
     '''
-    return telem.sensors.gps.lat, telem.sensors.gps.lon, uc.m_to_ft(telem.sensors.gps.alt), math.degrees(telem.sensors.gps.heading)
+    return telem.sensors.gps.lat, telem.sensors.gps.lon, uc.m_to_ft(telem.sensors.gps.alt), telem.sensors.gps.heading
 
 
 if __name__ == "__main__":
