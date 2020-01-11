@@ -6,11 +6,16 @@ import os
 
 from ARC.interop import Interop
 
+host = "192.168.1.130"
+port = "8000"
+username = "testuser"
+password = "testpass"
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-d","--directory", required=True)
     args = parser.parse_args()
-    io = Interop()
+    io = Interop(host, port, username, password)
     try:
         for objfile in os.listdir(args.directory):
             if objfile.endswith('json'):

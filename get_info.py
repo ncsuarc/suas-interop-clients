@@ -7,6 +7,11 @@ import datetime
 
 from ARC.interop import Interop
 
+host = "192.168.1.130"
+port = "8000"
+username = "testuser"
+password = "testpass"
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--save', action='store_true',  help='Save interop data?')
@@ -27,7 +32,7 @@ if __name__ == "__main__":
 
     else:
         saveData = False
-    io = Interop()
+    io = Interop(host, port, username, password)
 
     mission = io.get_missions()
     if saveData:

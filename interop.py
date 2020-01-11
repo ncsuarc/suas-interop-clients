@@ -1,24 +1,16 @@
 import requests
-import sys
 import json
-if (sys.version_info > (3, 0)):
-    from PyQt5.QtCore import QSettings
-else:
-    import sip
-    sip.setapi('QVariant', 2)
-    from PyQt4.QtCore import QSettings
 
 class Interop(object):
     """Send plane location
 
     """
-    def __init__(self):
+    def __init__(self, host, port, username, password):
         self.session = requests.session()
-        settings = QSettings("ARC", "PCC Interop Plugin")
-        self.host = str(settings.value('host'))
-        self.port = str(settings.value('port'))
-        username = str(settings.value('username'))
-        password = str(settings.value('password'))
+        self.host = host
+        self.port = port
+        username = username
+        password = password
 
         payload = {'username': username, 'password': password}
         payload = json.dumps(payload)

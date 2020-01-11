@@ -13,6 +13,11 @@ from ARC.interop import Interop
 
 telemetry_pub = "ipc:///tmp/mavlink_pub"
 
+host = "192.168.1.130"
+port = "8000"
+username = "testuser"
+password = "testpass"
+
 def generate_lat_lon(telem):
     '''
     Return a tuple of coordinates from a specific ARC.Telemery.
@@ -29,9 +34,8 @@ def generate_lat_lon(telem):
     '''
     return telem.sensors.gps.lat, telem.sensors.gps.lon, uc.m_to_ft(telem.sensors.gps.alt), telem.sensors.gps.heading
 
-
 if __name__ == "__main__":
-    io = Interop()
+    io = Interop(host, port, username, password)
     try:
         zmq_context = zmq.Context()
 
