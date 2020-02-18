@@ -1,15 +1,16 @@
-from ARC import unitconversion as uc
-
-import ARC
 import argparse
-import zmq
 import csv
-import pyproj
 import math
 
-telemetry_pub = 'ipc:///tmp/mavlink_pub'
+import ARC
+import pyproj
+import zmq
+from ARC import unitconversion as uc
 
-class Waypoint():
+telemetry_pub = "ipc:///tmp/mavlink_pub"
+
+
+class Waypoint:
     def __init__(self, lat, lon, alt):
         self.lat = lat
         self.lon = lon
@@ -44,11 +45,13 @@ def csv_to_waypoints(file):
     Returns:
         waypoints: list of waypoints
     """
-    with open(file, 'r') as csvfile:
+    with open(file, "r") as csvfile:
         waypoints = []
-        csvreader = csv.reader(csvfile, delimiter=',')
+        csvreader = csv.reader(csvfile, delimiter=",")
         for row in csvreader:
-            waypoints.append(Waypoint(float(row[0]), float(row[1]), float(row[2])))
+            waypoints.append(
+                Waypoint(float(row[0]), float(row[1]), float(row[2]))
+            )
         return waypoints
 
 
@@ -73,10 +76,12 @@ def waypoint_check(waypoints, max_dist=100, max_alt_delta=100):
             good = False
             print(waypoint.lat, waypoint.lon)
             way_location = ARC.presets.get_location(waypoint.lat, waypoint.lon)
-            way_coord = pyproj.transform(ARC.presets.wgs84,
-                                            way_location.projection,
-                                            waypoint.lon,
-                                            waypoint.lat)
+            way_coord = pyproj.transform(
+                ARC.presets.wgs84,
+                way_location.projection,
+                waypoint.lon,
+                waypoint.lat,
+            )
             while good == False:
                 packet = telemetry.recv_json()
                 try:
@@ -86,13 +91,17 @@ def waypoint_check(waypoints, max_dist=100, max_alt_delta=100):
                     continue
 
                 air_lat, air_lon, air_alt = generate_lat_lon(telem)
-                air_coord = pyproj.transform(ARC.presets.wgs84,
-                                                way_location.projection,
-                                                air_lon,
-                                                air_lat)
-                delta = (way_coord[0] - air_coord[0],
-                        way_coord[1] - air_coord[1])
-                dist = math.sqrt(delta[0]**2 + delta[1]**2)
+                air_coord = pyproj.transform(
+                    ARC.presets.wgs84,
+                    way_location.projection,
+                    air_lon,
+                    air_lat,
+                )
+                delta = (
+                    way_coord[0] - air_coord[0],
+                    way_coord[1] - air_coord[1],
+                )
+                dist = math.sqrt(delta[0] ** 2 + delta[1] ** 2)
                 dist = uc.m_to_ft(dist)
                 alt_delta = abs(waypoint.alt - air_alt)
                 if dist < max_dist and alt_delta < max_alt_delta:
@@ -107,8 +116,14 @@ def waypoint_check(waypoints, max_dist=100, max_alt_delta=100):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Judges waypoint accuracy')
-    parser.add_argument('-f', '--file', type=str, required=True, help="Waypoint file in csv format")
+    parser = argparse.ArgumentParser(description="Judges waypoint accuracy")
+    parser.add_argument(
+        "-f",
+        "--file",
+        type=str,
+        required=True,
+        help="Waypoint file in csv format",
+    )
     args = parser.parse_args()
     waypoints = csv_to_waypoints(args.file)
     waypoint_check(waypoints)

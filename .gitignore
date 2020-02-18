@@ -1,3 +1,12 @@
-*.csv
-*.txt
-*.pyc
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Build artifacts
+build/
+dist/
+*.egg
+*.egg-info/
+
+# mypy cache
+.mypy_cache/

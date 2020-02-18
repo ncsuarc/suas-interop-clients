@@ -1,11 +1,12 @@
 from __future__ import print_function
-import json
-import zmq
-import ARC
-import math
+
 import argparse
+import json
+import math
 import sys
 
+import ARC
+import zmq
 from ARC.interop import Interop
 
 host = "192.168.1.130"
@@ -21,12 +22,12 @@ if __name__ == "__main__":
     try:
         targets = io.get_targets()
         for target in targets:
-            print('Deleting:')
+            print("Deleting:")
             print(target)
-            print('\n')
-            if (not args.auto) and target.get('autonomous'):
+            print("\n")
+            if (not args.auto) and target.get("autonomous"):
                 continue
-            io.delete_target(target.get('id'))
+            io.delete_target(target.get("id"))
     except KeyboardInterrupt:
         pass
     finally:

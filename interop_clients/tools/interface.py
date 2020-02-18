@@ -1,14 +1,14 @@
 from __future__ import print_function
-import json
-import sys
-import zmq
-import ARC
-import ARC.unitconversion as uc
-import math
-import datetime
+
 import argparse
+import datetime
+import json
+import math
 import sys
 
+import ARC
+import ARC.unitconversion as uc
+import zmq
 from ARC.interop import Interop
 
 telemetry_pub = "ipc:///tmp/mavlink_pub"
@@ -18,8 +18,9 @@ port = "8000"
 username = "testuser"
 password = "testpass"
 
+
 def generate_lat_lon(telem):
-    '''
+    """
     Return a tuple of coordinates from a specific ARC.Telemery.
 
     Args:
@@ -31,8 +32,14 @@ def generate_lat_lon(telem):
         float: Longitude (degrees).
         float: MSL Altitude (feet).
         float: Heading from north (degrees).
-    '''
-    return telem.sensors.gps.lat, telem.sensors.gps.lon, uc.m_to_ft(telem.sensors.gps.alt), telem.sensors.gps.heading
+    """
+    return (
+        telem.sensors.gps.lat,
+        telem.sensors.gps.lon,
+        uc.m_to_ft(telem.sensors.gps.alt),
+        telem.sensors.gps.heading,
+    )
+
 
 if __name__ == "__main__":
     io = Interop(host, port, username, password)
