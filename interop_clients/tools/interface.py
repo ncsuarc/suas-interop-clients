@@ -1,22 +1,14 @@
 from __future__ import print_function
 
-import argparse
-import datetime
-import json
-import math
 import sys
+
+import zmq
 
 import ARC
 import ARC.unitconversion as uc
-import zmq
-from ARC.interop import Interop
+from interop_clients import Interop
 
 telemetry_pub = "ipc:///tmp/mavlink_pub"
-
-host = "192.168.1.130"
-port = "8000"
-username = "testuser"
-password = "testpass"
 
 
 def generate_lat_lon(telem):
@@ -41,8 +33,7 @@ def generate_lat_lon(telem):
     )
 
 
-if __name__ == "__main__":
-    io = Interop(host, port, username, password)
+def run(io: Interop, telemetry_pub: str) -> None:
     try:
         zmq_context = zmq.Context()
 

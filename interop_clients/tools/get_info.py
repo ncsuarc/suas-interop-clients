@@ -1,56 +1,33 @@
-import argparse
 import csv
 import datetime
 import json
 import os
-import time
 
-from ARC.interop import Interop
+from interop_clients import Interop
 
-host = "192.168.1.130"
-port = "8000"
-username = "testuser"
-password = "testpass"
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--save", action="store_true", help="Save interop data?"
-    )
-    parser.add_argument(
-        "-i",
-        "--interval",
-        help="Interval in seconds between requests to the interop server",
-        type=float,
-    )
-    parser.add_argument(
-        "-r",
-        "--record-time",
-        help="Time in seconds to record data from the interop server",
-        type=int,
-    )
-    parser.add_argument(
-        "-d", "--save-directory", help="The name of the directory to save in"
-    )
-    parser.add_argument(
-        "-csv", "--csv", help="The name of the csv file to save waypoints in"
-    )
-    args = parser.parse_args()
-    if args.save:
+def run(
+    io: Interop,
+    save: bool,
+    interval: float,
+    record_time: int,
+    save_directory: str,
+    csv_path: str,
+) -> None:
+    if save:
         saveData = True
-        if not (args.interval and args.record_time):
+        if not (interval and record_time):
             raise ValueError(
                 "Interval and Record Time are required when saving data"
             )
             saveData = False
-        if args.save_directory:
-            saveDir = args.save_directory
+        if save_directory:
+            saveDir = save_directory
         else:
             saveDir = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
 
     else:
         saveData = False
-    io = Interop(host, port, username, password)
 
     mission = io.get_missions()
     if saveData:
@@ -75,8 +52,8 @@ if __name__ == "__main__":
     print("\nAir Drop")
     print(active_mission.get("airDropPos"))
 
-    if args.csv:
-        with open(args.csv, "w") as csvFile:
+    if csv:
+        with open(csv_path, "w") as csvFile:
             csvWriter = csv.writer(csvFile)
             interop_waypoints = active_mission.get("waypoints")
 
@@ -84,25 +61,3 @@ if __name__ == "__main__":
                 csvWriter.writerow(
                     [point["latitude"], point["longitude"], point["altitude"]]
                 )
-
-    # obstacles = io.get_obstacles()
-    if False:
-        # if saveData:
-        with open(
-            os.path.join(saveDir, "stationary.txt"), "w"
-        ) as stationary_file:
-            stationary_file.write(
-                json.dumps(obstacles.get("stationary_obstacles"))
-            )
-        with open(os.path.join(saveDir, "moving.txt"), "w") as moving_file:
-            startTime = datetime.datetime.now()
-            while (
-                datetime.datetime.now() - startTime
-            ).total_seconds() < args.record_time:
-                obstacles = io.get_obstacles()
-                moving_obstacles = obstacles.get("moving_obstacles")
-                moving_file.write(
-                    "\n--------\n" + str(datetime.datetime.now()) + "\n"
-                )
-                moving_file.write(json.dumps(moving_obstacles))
-                time.sleep(args.interval)

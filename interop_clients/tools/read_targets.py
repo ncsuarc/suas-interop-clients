@@ -1,21 +1,9 @@
 from __future__ import print_function
 
-import argparse
-import json
-import math
-import sys
+from interop_clients import Interop
 
-import ARC
-import zmq
-from ARC.interop import Interop
 
-host = "192.168.1.130"
-port = "8000"
-username = "testuser"
-password = "testpass"
-
-if __name__ == "__main__":
-    io = Interop(host, port, username, password)
+def run(io: Interop) -> None:
     try:
         targets = io.get_targets()
         print("\nTargets:")

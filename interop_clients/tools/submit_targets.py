@@ -1,29 +1,17 @@
 from __future__ import print_function
 
-import argparse
 import json
 import os
 
-import ARC
-from ARC.interop import Interop
+from interop_clients import Interop
 
-host = "192.168.1.130"
-port = "8000"
-username = "testuser"
-password = "testpass"
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-d", "--directory", required=True)
-    args = parser.parse_args()
-    io = Interop(host, port, username, password)
+def run(io: Interop, directory: str) -> None:
     try:
-        for objfile in os.listdir(args.directory):
+        for objfile in os.listdir(directory):
             if objfile.endswith("json"):
                 name = objfile.split(".")[0]
-                with open(
-                    os.path.join(args.directory, objfile), "r"
-                ) as json_file:
+                with open(os.path.join(directory, objfile), "r") as json_file:
                     json_data = json.load(json_file)
                     json_data = {
                         "mission": 1,
@@ -40,7 +28,7 @@ if __name__ == "__main__":
                         "autonomous": False,
                     }
                 with open(
-                    os.path.join(args.directory, name + ".jpg"), "rb"
+                    os.path.join(directory, name + ".jpg"), "rb"
                 ) as image_data:
                     io.post_target(json_data, image_data)
     except KeyboardInterrupt:

@@ -10,3 +10,6 @@ dist/
 
 # mypy cache
 .mypy_cache/
+
+# Python virtal env
+.venv/

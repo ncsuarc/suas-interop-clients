@@ -1,10 +1,10 @@
-import argparse
 import csv
 import math
 
-import ARC
 import pyproj
 import zmq
+
+import ARC
 from ARC import unitconversion as uc
 
 telemetry_pub = "ipc:///tmp/mavlink_pub"
@@ -57,12 +57,15 @@ def csv_to_waypoints(file):
 
 def waypoint_check(waypoints, max_dist=100, max_alt_delta=100):
     """
-    Checks that the plane flies the waypoints in order and within the specified deltas
+    Checks that the plane flies the waypoints in order and within the specified
+    deltas
 
     Arguments:
         waypoints: list of waypoints
-        max_dist: the maximum distance the plane can be from the waypoint to capture it
-        max_alt_delta: the maximum altitude difference between the waypoint and the plane to capture
+        max_dist: the maximum distance the plane can be from the waypoint to
+            capture it
+        max_alt_delta: the maximum altitude difference between the waypoint and
+            the plane to capture
 
     Returns:
         None
@@ -82,7 +85,7 @@ def waypoint_check(waypoints, max_dist=100, max_alt_delta=100):
                 waypoint.lon,
                 waypoint.lat,
             )
-            while good == False:
+            while not good:
                 packet = telemetry.recv_json()
                 try:
                     telem = ARC.Telemetry(packet["telemetry"])
@@ -115,15 +118,6 @@ def waypoint_check(waypoints, max_dist=100, max_alt_delta=100):
         zmq_context.term()
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Judges waypoint accuracy")
-    parser.add_argument(
-        "-f",
-        "--file",
-        type=str,
-        required=True,
-        help="Waypoint file in csv format",
-    )
-    args = parser.parse_args()
-    waypoints = csv_to_waypoints(args.file)
+def run(file: str) -> None:
+    waypoints = csv_to_waypoints(file)
     waypoint_check(waypoints)
