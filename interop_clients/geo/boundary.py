@@ -1,9 +1,19 @@
 from interop_clients import Interop
+from osgeo import ogr
 
 
-def run(io: Interop, lat: float, lon: float) -> None:
-    from osgeo import ogr
+def check_point(io: Interop, lat: float, lon: float) -> bool:
+    """
+    Check if point is within the boundary of an active mission.
 
+    Args:
+        io: The Interop object.
+        lat: The float value of your Latitude coordinate.
+        lon: The float value of your Longitude coordinate.
+
+    Returns:
+        True if point is within boundary, otherwise false
+    """
     target_point = ogr.Geometry(ogr.wkbPoint)
     target_point.AddPoint(lat, lon)
 
@@ -30,4 +40,4 @@ def run(io: Interop, lat: float, lon: float) -> None:
     polygon = ogr.Geometry(ogr.wkbPolygon)
     polygon.AddGeometry(ring)
 
-    print(polygon.Contains(target_point))
+    return polygon.Contains(target_point)

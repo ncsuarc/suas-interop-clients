@@ -42,15 +42,6 @@ def main(
     ctx.obj = Interop(host, port, username, password)
 
 
-@main.command("check")
-@click.argument("lat", type=float)
-@click.argument("lon", type=float)
-@click.pass_context
-def check_point(ctx: click.Context, lat: float, lon: float) -> None:
-    io = ctx.obj
-    tools.check_point.run(io, lat, lon)
-
-
 @main.command("interface")
 @click.argument("telemetry_pub", type=str)
 @click.pass_context
@@ -105,3 +96,11 @@ def submit_targets(ctx: click.Context, directory: str) -> None:
 @click.argument("file", type=str)
 def waypoint_grader(file: str) -> None:
     tools.waypoint_grader.run(file)
+
+
+try:
+    import interop_clients.geo.cli
+
+    main.add_command(interop_clients.geo.cli.main, "geo")
+except ImportError:
+    pass
