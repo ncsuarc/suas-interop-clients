@@ -9,6 +9,11 @@ matrix:
       env: TOXENV=py38
     - python: pypy3
       env: TOXENV=pypy3
+    - python: nightly
+  allow_failures:
+    # Nightly is included so we get early warnings of failures, but it's
+    # unstable so we let it fail
+    - python: nightly
 install:
   - pip install tox
 script:
