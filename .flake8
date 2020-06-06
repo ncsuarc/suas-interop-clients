@@ -1,0 +1,4 @@
+; TODO: Put this in pyproject.toml once flake8 supports it
+[flake8]
+; This project re-exports things in __init__.py files
+exclude = __init__.py

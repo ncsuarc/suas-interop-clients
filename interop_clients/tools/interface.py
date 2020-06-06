@@ -2,11 +2,11 @@ from __future__ import print_function
 
 import sys
 
-import zmq
+import zmq  # type: ignore
 
-import ARC
-import ARC.unitconversion as uc
-from interop_clients import Interop
+import ARC  # type: ignore
+import ARC.unitconversion as uc  # type: ignore
+from interop_clients import InteropClient
 
 telemetry_pub = "ipc:///tmp/mavlink_pub"
 
@@ -33,7 +33,7 @@ def generate_lat_lon(telem):
     )
 
 
-def run(io: Interop, telemetry_pub: str) -> None:
+def run(io: InteropClient, telemetry_pub: str) -> None:
     try:
         zmq_context = zmq.Context()
 

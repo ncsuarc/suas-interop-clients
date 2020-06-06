@@ -1,13 +1,13 @@
-from interop_clients import Interop
-from osgeo import ogr
+from interop_clients import InteropClient
+from osgeo import ogr  # type: ignore
 
 
-def check_point(io: Interop, lat: float, lon: float) -> bool:
+def check_point(io: InteropClient, lat: float, lon: float) -> bool:
     """
     Check if point is within the boundary of an active mission.
 
     Args:
-        io: The Interop object.
+        io: The InteropClient object.
         lat: The float value of your Latitude coordinate.
         lon: The float value of your Longitude coordinate.
 

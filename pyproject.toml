@@ -3,6 +3,7 @@ line-length = 79
 include = '\.pyi?$'
 
 [tool.isort]
+# Make isort agree with black
 multi_line_output = 3
 include_trailing_comma = true
 

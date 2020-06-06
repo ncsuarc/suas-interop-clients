@@ -1,24 +1,16 @@
 import click
 
-from interop_clients import Interop, tools
+from interop_clients import InteropClient, tools
 
 
 @click.group()
 @click.option(
     "-h",
-    "--host",
+    "--host-url",
     "host",
     required=True,
     type=str,
     help="The host server to connect to.",
-)
-@click.option(
-    "-p",
-    "--port",
-    "port",
-    required=True,
-    type=str,
-    help="The port to connect to.",
 )
 @click.option(
     "-u",
@@ -29,7 +21,7 @@ from interop_clients import Interop, tools
     help="The username to connect under.",
 )
 @click.password_option(
-    "-w",
+    "-p",
     "--password",
     "password",
     type=str,
@@ -37,9 +29,9 @@ from interop_clients import Interop, tools
 )
 @click.pass_context
 def main(
-    ctx: click.Context, host: str, port: str, username: str, password: str,
+    ctx: click.Context, host_url: str, username: str, password: str,
 ) -> None:
-    ctx.obj = Interop(host, port, username, password)
+    ctx.obj = InteropClient(host_url, username, password)
 
 
 @main.command("interface")

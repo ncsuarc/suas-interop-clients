@@ -3,10 +3,10 @@ from __future__ import print_function
 import json
 import os
 
-from interop_clients import Interop
+from interop_clients import InteropClient
 
 
-def run(io: Interop, directory: str) -> None:
+def run(io: InteropClient, directory: str) -> None:
     try:
         for objfile in os.listdir(directory):
             if objfile.endswith("json"):

@@ -1,10 +1,10 @@
 import csv
 import math
 
-import pyproj
-import zmq
+import pyproj  # type: ignore
+import zmq  # type: ignore
 
-import ARC
+import ARC  # type: ignore
 from ARC import unitconversion as uc
 
 telemetry_pub = "ipc:///tmp/mavlink_pub"

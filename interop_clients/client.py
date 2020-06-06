@@ -1,48 +1,50 @@
-"""
-Basic Python client for the interop server.
-"""
+"""Basic Python client for the SUAS Interop server."""
+
+from typing import Any, List, Optional
 
 import requests
 
+from interop_clients import api
+
 
 class InteropError(Exception):
-    """
-    Generic exception thrown by InteropClient.
+    """Generic exception thrown by InteropClient.
 
     All exceptions thrown by InteropClient should be subclasses of this.
     """
 
 
 class InteropClient:
-    """
-    Client providing authenticated access to the Judge's interoperability
-    server.
+    """Client providing authenticated access to the interop server.
 
     All methods may raise an InteropError.
 
-    Constructing the client sends a login request, and all future requests use
-    this authenticated cookie.
+    Constructing the client sends a single login request. All future requests
+    use this authenticated cookie.
     """
 
-    def __init__(self, url, username, password):
-        """
-        Create new client and login.
+    def __init__(self, url: str, username: str, password: str) -> None:
+        """Create new client and login.
 
         Args:
             url: Base URL of interop server (e.g. "http://localhost:8080").
             username: Interop username.
             password: Interop password.
+
+        Raises:
+            InteropError: When the provided username or password are incorrect.
+                When the interop server cannot be reached.
         """
         self.session = requests.Session()
         self.url = url
 
-        self.post(
-            "/api/login", json=dict(username=username, password=password)
+        self._post(
+            "/api/login",
+            json=api.Credentials(username=username, password=password),
         )
 
-    def get(self, uri, **kwargs):
-        """
-        GET request to server.
+    def _get(self, uri: str, **kwargs: Any) -> requests.Response:
+        """GET request to server.
 
         This is a wrapper around `self.session.get`.
 
@@ -58,9 +60,8 @@ class InteropClient:
             raise InteropError(r)
         return r
 
-    def post(self, uri, **kwargs):
-        """
-        POST request to server.
+    def _post(self, uri: str, **kwargs: Any) -> requests.Response:
+        """POST request to server.
 
         This is a wrapper around `self.session.post`.
 
@@ -76,9 +77,8 @@ class InteropClient:
             raise InteropError(r)
         return r
 
-    def put(self, uri, **kwargs):
-        """
-        PUT request to server.
+    def _put(self, uri: str, **kwargs: Any) -> requests.Response:
+        """PUT request to server.
 
         This is a wrapper around `self.session.put`.
 
@@ -94,9 +94,8 @@ class InteropClient:
             raise InteropError(r)
         return r
 
-    def delete(self, uri):
-        """
-        DELETE request to server.
+    def _delete(self, uri: str) -> requests.Response:
+        """DELETE request to server.
 
         This is a wrapper around `self.session.delete`.
 
@@ -111,38 +110,34 @@ class InteropClient:
             raise InteropError(r)
         return r
 
-    def get_teams(self):
-        """
-        GET the status of teams.
+    def get_teams(self) -> List[api.TeamStatus]:
+        """GET the status of teams.
 
         Returns:
             List of team status dicts for active teams.
         """
-        return self.get("/api/teams").json()
+        return self._get("/api/teams").json()
 
-    def get_mission(self, mission_id):
-        """
-        GET mission information by ID.
+    def get_mission(self, mission_id: api.Id) -> api.Mission:
+        """GET mission information by ID.
 
         Args:
             mission_id: ID of mission to get.
         Returns:
             Mission information dict.
         """
-        return self.get(f"/api/missions/{mission_id}").json()
+        return self._get(f"/api/missions/{mission_id}").json()
 
-    def post_telemetry(self, telem):
-        """
-        POST new telemetry.
+    def post_telemetry(self, telem: api.Telemetry) -> None:
+        """POST new telemetry.
 
         Args:
             telem: Telemetry object containing telemetry state.
         """
-        self.post("/api/telemetry", json=telem)
+        self._post("/api/telemetry", json=telem)
 
-    def get_odlcs(self, mission=None):
-        """
-        GET list of odlcs (targets).
+    def get_odlcs(self, mission: Optional[api.Id] = None) -> List[api.Odlc]:
+        """GET list of odlcs (targets).
 
         Args:
             mission: Optional ID of mission to restrict by.
@@ -152,22 +147,20 @@ class InteropClient:
         url = "/api/odlcs"
         if mission is not None:
             url += f"?mission={mission}"
-        return self.get(url).json()
+        return self._get(url).json()
 
-    def get_odlc(self, odlc_id):
-        """
-        GET odlc by ID.
+    def get_odlc(self, odlc_id: api.Id) -> api.Odlc:
+        """GET odlc by ID.
 
         Args:
             odlc_id: ID of odlc to get.
         Returns:
             odlc dict with given ID.
         """
-        return self.get(f"/api/odlcs/{odlc_id}").json()
+        return self._get(f"/api/odlcs/{odlc_id}").json()
 
-    def post_odlc(self, odlc):
-        """
-        POST odlc.
+    def post_odlc(self, odlc: api.Odlc) -> None:
+        """POST odlc.
 
         This gets the image ID, content, and all other required information
         from `odlc`.
@@ -177,41 +170,37 @@ class InteropClient:
         Returns:
             odlc dict with given ID.
         """
-        self.post(f"/api/odlcs", json=odlc)
+        self._post(f"/api/odlcs", json=odlc)
 
-    def put_odlc(self, odlc_id, odlc):
-        """
-        PUT odlc.
+    def put_odlc(self, odlc_id: api.Id, odlc: api.Odlc) -> None:
+        """PUT odlc.
 
         Args:
             odlc_id: ID of odlc to update.
             odlc: Next dict of odlc details. Missing keys are left unchanged.
         """
-        self.put(f"/api/odlcs/{odlc_id}", json=odlc)
+        self._put(f"/api/odlcs/{odlc_id}", json=odlc)
 
-    def delete_odlc(self, odlc_id):
-        """
-        DELETE odlc.
+    def delete_odlc(self, odlc_id: api.Id) -> None:
+        """DELETE odlc.
 
         Args:
             odlc_id: ID of odlc to delete.
         """
-        self.delete(f"/api/odlcs/{odlc_id}")
+        self._delete(f"/api/odlcs/{odlc_id}")
 
-    def get_odlc_image(self, odlc_id):
-        """
-        GET raw odlc image bytes.
+    def get_odlc_image(self, odlc_id: api.Id) -> bytes:
+        """GET raw odlc image bytes.
 
         Args:
             odlc_id: ID of odlc to get.
         Returns:
             Raw thumbnail data for given odlc.
         """
-        return self.get(f"/api/odlcs/{odlc_id}/image").content
+        return self._get(f"/api/odlcs/{odlc_id}/image").content
 
-    def post_odlc_image(self, odlc_id, image_data):
-        """
-        PUT odlc.
+    def post_odlc_image(self, odlc_id: api.Id, image_data: bytes) -> None:
+        """PUT odlc.
 
         `image_data` must be either a PNG or a JPG.
 
@@ -221,9 +210,8 @@ class InteropClient:
         """
         self.put_odlc_image(odlc_id, image_data)
 
-    def put_odlc_image(self, odlc_id, image_data):
-        """
-        PUT odlc.
+    def put_odlc_image(self, odlc_id: api.Id, image_data: bytes) -> None:
+        """PUT odlc.
 
         `image_data` must be either a PNG or a JPG.
 
@@ -231,13 +219,12 @@ class InteropClient:
             odlc_id: ID of odlc for which to upload image_data.
             image_data: Raw image bytes to upload.
         """
-        self.put(f"/api/odlcs/{odlc_id}/image", data=image_data)
+        self._put(f"/api/odlcs/{odlc_id}/image", data=image_data)
 
-    def delete_odlc_image(self, odlc_id):
-        """
-        DELETE odlc.
+    def delete_odlc_image(self, odlc_id: api.Id) -> None:
+        """DELETE odlc.
 
         Args:
             odlc_id: ID of odlc which is being deleted.
         """
-        self.delete(f"/api/odlcs/{odlc_id}/image")
+        self._delete(f"/api/odlcs/{odlc_id}/image")

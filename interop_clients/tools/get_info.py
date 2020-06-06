@@ -3,11 +3,11 @@ import datetime
 import json
 import os
 
-from interop_clients import Interop
+from interop_clients import InteropClient
 
 
 def run(
-    io: Interop,
+    io: InteropClient,
     save: bool,
     interval: float,
     record_time: int,

@@ -1,9 +1,9 @@
 from __future__ import print_function
 
-from interop_clients import Interop
+from interop_clients import InteropClient
 
 
-def run(io: Interop, auto: bool) -> None:
+def run(io: InteropClient, auto: bool) -> None:
     try:
         targets = io.get_targets()
         for target in targets:
