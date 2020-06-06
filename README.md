@@ -1,5 +1,7 @@
 # interop_clients
 
+[![Build Status](https://travis-ci.com/ncsuarc/interop_clients.svg?branch=master)](https://travis-ci.com/ncsuarc/interop_clients)
+
 Interoperability client for the Aerial Robotics Club at NC State.
 
 ## Development
