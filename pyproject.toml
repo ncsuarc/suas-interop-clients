@@ -14,12 +14,17 @@ description = "Alternative interop clients for AUVSI SUAS"
 authors = ["NC State Aerial Robotics Club <aerialroboticsclub@ncsu.edu>"]
 
 [tool.poetry.dependencies]
-python = "^3.6"
 click = "^6.7"
-requests = "^2.22.0"
-pyzmq = "^18.1.1"
-GDAL = { version = "2.1.0", optional = true }
 pyproj = "^2.4.2"
+python = "^3.6"
+pyzmq = "^18.1.1"
+requests = "^2.22.0"
+
+# Optional dependencies
+GDAL = { version = "2.1.0", optional = true }
+
+[tool.poetry.extras]
+geo = ["GDAL"]
 
 [tool.poetry.dev-dependencies]
 pytest = "^3.0"
