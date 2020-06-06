@@ -8,8 +8,9 @@ dist/
 *.egg
 *.egg-info/
 
-# mypy cache
-.mypy_cache/
-
 # Python virtal env
 .venv/
+
+# Tooling artifacts
+.mypy_cache/
+.tox/
