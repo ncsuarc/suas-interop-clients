@@ -1,5 +1,6 @@
 import click
 
+import interop_clients.cli_odlc
 from interop_clients import InteropClient, tools
 
 
@@ -34,14 +35,6 @@ def main(
     ctx.obj = InteropClient(host_url, username, password)
 
 
-@main.command("delete-all-targets")
-@click.argument("auto", type=bool)
-@click.pass_context
-def delete_all_targets(ctx: click.Context, auto: bool) -> None:
-    io = ctx.obj
-    tools.delete_all_targets.run(io, auto)
-
-
 @main.command("info")
 @click.argument("save", type=bool)
 @click.argument("interval", type=float)
@@ -61,19 +54,7 @@ def get_info(
     tools.get_info.run(io, save, interval, record_time, save_directory, csv)
 
 
-@main.command("read-targets")
-@click.pass_context
-def read_targets(ctx: click.Context) -> None:
-    io = ctx.obj
-    tools.read_targets.run(io)
-
-
-@main.command("submit-targets")
-@click.argument("directory", type=str)
-@click.pass_context
-def submit_targets(ctx: click.Context, directory: str) -> None:
-    io = ctx.obj
-    tools.submit_targets.run(io, directory)
+main.add_command(interop_clients.cli_odlc.main, "odlc")
 
 
 try:

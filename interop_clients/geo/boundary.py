@@ -1,5 +1,6 @@
-from interop_clients import InteropClient
 from osgeo import ogr  # type: ignore
+
+from interop_clients import InteropClient
 
 
 def check_point(io: InteropClient, lat: float, lon: float) -> bool:

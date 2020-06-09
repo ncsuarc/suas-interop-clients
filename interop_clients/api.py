@@ -48,6 +48,7 @@ class StationaryObstacle(TypedDict):
     radius: float
     height: float
 
+
 class OdlcType(IntEnum):
     STANDARD = 1
     EMERGENT = 4
