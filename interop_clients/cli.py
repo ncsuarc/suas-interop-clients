@@ -4,7 +4,21 @@ import interop_clients.cli_odlc
 from interop_clients import InteropClient, tools
 
 
+def print_version(ctx, param, value):
+    if not value or ctx.resilient_parsing:
+        return
+    click.echo(f"interop_clients v{interop_clients.__version__}")
+    ctx.exit()
+
+
 @click.group()
+@click.option(
+    "--version",
+    is_flag=True,
+    callback=print_version,
+    expose_value=False,
+    is_eager=True,
+)
 @click.option(
     "-h",
     "--host-url",
