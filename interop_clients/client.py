@@ -172,7 +172,7 @@ class InteropClient:
         Returns:
             ID assigned to the given ODLC.
         """
-        return self._post(f"/api/odlcs", json=odlc).json()["id"]
+        return self._post("/api/odlcs", json=odlc).json()["id"]
 
     def put_odlc(self, odlc_id: api.Id, odlc: api.Odlc) -> None:
         """PUT odlc.
