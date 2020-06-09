@@ -6,7 +6,7 @@ ergonomic API.
 """
 
 import sys
-from enum import Enum
+from enum import IntEnum
 from typing import List, Optional
 
 if sys.version_info >= (3, 8):
@@ -49,68 +49,78 @@ class StationaryObstacle(TypedDict):
     height: float
 
 
-class Odlc:
-    id: Id
+class OdlcType(IntEnum):
+    STANDARD = 1
+    EMERGENT = 4
+
+
+class OdlcOrientation(IntEnum):
+    N = 1
+    NE = 2
+    E = 3
+    SE = 4
+    S = 5
+    SW = 6
+    W = 7
+    NW = 8
+
+
+class OdlcShape(IntEnum):
+    CIRCLE = 1
+    SEMICIRCLE = 2
+    QUARTER_CIRCLE = 3
+    TRIANGLE = 4
+    SQUARE = 5
+    RECTANGLE = 6
+    TRAPEZOID = 7
+    PENTAGON = 8
+    HEXAGON = 9
+    HEPTAGON = 10
+    OCTAGON = 11
+    STAR = 12
+    CROSS = 13
+
+
+class OdlcColor(IntEnum):
+    WHITE = 1
+    BLACK = 2
+    GRAY = 3
+    RED = 4
+    BLUE = 5
+    GREEN = 6
+    YELLOW = 7
+    PURPLE = 8
+    BROWN = 9
+    ORANGE = 10
+
+
+class NewOdlc(TypedDict):
+    """Odlc without an id"""
+
     mission: Id
 
-    class Type(Enum):
-        STANDARD = 1
-        EMERGENT = 4
+    type: OdlcType
 
-    type: Type
-
+    # Must be specified together
     latitude: Optional[float]
     longitude: Optional[float]
 
-    class Orientation(Enum):
-        N = 1
-        NE = 2
-        E = 3
-        SE = 4
-        S = 5
-        SW = 6
-        W = 7
-        NW = 8
+    orientation: Optional[OdlcOrientation]
 
-    orientation: Optional[Orientation]
-
-    class Shape(Enum):
-        CIRCLE = 1
-        SEMICIRCLE = 2
-        QUARTER_CIRCLE = 3
-        TRIANGLE = 4
-        SQUARE = 5
-        RECTANGLE = 6
-        TRAPEZOID = 7
-        PENTAGON = 8
-        HEXAGON = 9
-        HEPTAGON = 10
-        OCTAGON = 11
-        STAR = 12
-        CROSS = 13
-
-    shape: Optional[Shape]
+    shape: Optional[OdlcShape]
 
     alphanumeric: Optional[str]
 
-    class Color(Enum):
-        WHITE = 1
-        BLACK = 2
-        GRAY = 3
-        RED = 4
-        BLUE = 5
-        GREEN = 6
-        YELLOW = 7
-        PURPLE = 8
-        BROWN = 9
-        ORANGE = 10
-
-    shape_color: Optional[Color]
-    alphanumeric_color: Optional[Color]
+    shape_color: Optional[OdlcColor]
+    alphanumeric_color: Optional[OdlcColor]
 
     description: Optional[str]
 
     autonomous: bool
+
+
+class Odlc(NewOdlc):
+    id: Id
 
 
 class TeamId(TypedDict):
