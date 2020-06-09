@@ -34,14 +34,6 @@ def main(
     ctx.obj = InteropClient(host_url, username, password)
 
 
-@main.command("interface")
-@click.argument("telemetry_pub", type=str)
-@click.pass_context
-def interface(ctx: click.Context, telemetry_pub: str) -> None:
-    io = ctx.obj
-    tools.interface.run(io, telemetry_pub)
-
-
 @main.command("delete-all-targets")
 @click.argument("auto", type=bool)
 @click.pass_context
@@ -82,12 +74,6 @@ def read_targets(ctx: click.Context) -> None:
 def submit_targets(ctx: click.Context, directory: str) -> None:
     io = ctx.obj
     tools.submit_targets.run(io, directory)
-
-
-@main.command("waypoint-grader")
-@click.argument("file", type=str)
-def waypoint_grader(file: str) -> None:
-    tools.waypoint_grader.run(file)
 
 
 try:
