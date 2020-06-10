@@ -1,0 +1,12 @@
+{
+    "alphanumeric": "8",
+    "alphanumeric_color": "ORANGE",
+    "autonomous": false,
+    "latitude": 36.16453882999967,
+    "longitude": -78.80644505807577,
+    "mission": 1,
+    "orientation": "NW",
+    "shape": "STAR",
+    "shape_color": "GREEN",
+    "type": "STANDARD"
+}

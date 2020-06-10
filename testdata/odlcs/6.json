@@ -1,0 +1,12 @@
+{
+    "alphanumeric": "T",
+    "alphanumeric_color": "BLUE",
+    "autonomous": false,
+    "latitude": 36.165088772388394,
+    "longitude": -78.80478182444108,
+    "mission": 1,
+    "orientation": "NE",
+    "shape": "CIRCLE",
+    "shape_color": "ORANGE",
+    "type": "STANDARD"
+}
