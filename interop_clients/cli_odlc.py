@@ -121,24 +121,60 @@ def upload(
 @main.command("delete")
 @click.argument("ids", type=int, nargs=-1)
 @click.option("--all", "-a", "delete_all", is_flag=True)
+@click.option("--image", "-i", "image_only", is_flag=True)
 @click.pass_context
-def delete(ctx: click.Context, ids: int, delete_all: bool) -> None:
+def delete(
+    ctx: click.Context, ids: List[int], delete_all: bool, image_only: bool
+) -> None:
     io = ctx.obj
+    delete = io.delete_odlc_image if image_only else io.delete_odlc
     if delete_all:
         for odlc in io.get_odlcs():
-            io.delete_odlc(odlc["id"])
+            delete(odlc["id"])
     else:
         for odlc_id in ids:
-            io.delete_odlc(odlc_id)
+            delete(odlc_id)
+
+
+@main.command("info")
+@click.option(
+    "--output", "-o", type=click.File("w"),
+)
+@click.option("--minify", is_flag=True)
+@click.pass_context
+def info(ctx: click.Context, output: click.File, minify: bool) -> None:
+    io = ctx.obj
+    if minify:
+        print(io.get_odlcs(), file=output)
+    else:
+        pprint.pprint(io.get_odlcs(), stream=output)
 
 
 # TODO: Add options to output to file(s)
 @main.command("dump")
+@click.option(
+    "--directory", "-d", type=click.Path(writable=True), default=".",
+)
+# TODO: Use PIL to automatically determine the extension
+@click.option("--image-extension", "-e", required=True)
 @click.option("--pretty", "-p", is_flag=True)
 @click.pass_context
-def dump(ctx: click.Context, pretty: bool) -> None:
+def dump(
+    ctx: click.Context,
+    directory: os.PathLike,
+    image_extension: str,
+    pretty: bool,
+) -> None:
     io = ctx.obj
-    if pretty:
-        pprint.pp(io.get_odlcs())
-    else:
-        print(io.get_odlcs())
+
+    for odlc in io.get_odlcs():
+        odlc_id = odlc["id"]
+        with open(os.path.join(directory, f"{odlc_id}.json"), "w") as fodlc:
+            if pretty:
+                pprint.pprint(io.get_odlcs(), stream=fodlc)
+            else:
+                print(io.get_odlcs(), file=fodlc)
+        with open(
+            os.path.join(directory, f"{odlc_id}.{image_extension}"), "wb"
+        ) as fimage:
+            fimage.write(io.get_odlc_image(odlc_id))
