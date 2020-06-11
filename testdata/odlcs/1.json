@@ -1,0 +1,12 @@
+{
+    "alphanumeric": "P",
+    "alphanumeric_color": "RED",
+    "autonomous": false,
+    "latitude": 36.16317072962577,
+    "longitude": -78.80604717644117,
+    "mission": 1,
+    "orientation": "E",
+    "shape": "QUARTER_CIRCLE",
+    "shape_color": "WHITE",
+    "type": "STANDARD"
+}

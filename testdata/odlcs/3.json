@@ -1,0 +1,12 @@
+{
+    "alphanumeric": "G",
+    "alphanumeric_color": "BLUE",
+    "autonomous": false,
+    "latitude": 36.16369284599385,
+    "longitude": -78.80543820639645,
+    "mission": 1,
+    "orientation": "NW",
+    "shape": "HEXAGON",
+    "shape_color": "ORANGE",
+    "type": "STANDARD"
+}

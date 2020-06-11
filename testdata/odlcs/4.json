@@ -1,0 +1,12 @@
+{
+    "alphanumeric": "S",
+    "alphanumeric_color": "WHITE",
+    "autonomous": false,
+    "latitude": 36.1659093133912,
+    "longitude": -78.80327687351412,
+    "mission": 1,
+    "orientation": "SE",
+    "shape": "TRIANGLE",
+    "shape_color": "BLUE",
+    "type": "STANDARD"
+}
