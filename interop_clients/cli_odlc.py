@@ -80,7 +80,7 @@ def main() -> None:
 
 @main.command("update")
 @click.option("--directory", "-d", "dirs", multiple=True)
-@click.option("--with-thumbnail", "-t", type=(api.Id, str, str), multiple=True)
+@click.option("--with-thumbnail", "-w", type=(api.Id, str, str), multiple=True)
 @click.option("--no-thumbnail", "-n", type=(api.Id, str), multiple=True)
 @click.pass_context
 def update(
@@ -100,7 +100,7 @@ def update(
 
 @main.command("upload")
 @click.option("--directory", "-d", "dirs", multiple=True)
-@click.option("--with-thumbnail", "-t", type=(str, str), multiple=True)
+@click.option("--with-thumbnail", "-w", type=(str, str), multiple=True)
 @click.option("--no-thumbnail", "-n", type=str, multiple=True)
 @click.pass_context
 def upload(
