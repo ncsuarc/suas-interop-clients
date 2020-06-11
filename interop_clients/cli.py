@@ -14,6 +14,7 @@ def print_version(ctx, param, value):
 @click.group()
 @click.option(
     "--version",
+    "-V",
     is_flag=True,
     callback=print_version,
     expose_value=False,
