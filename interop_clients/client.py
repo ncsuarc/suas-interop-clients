@@ -57,7 +57,7 @@ class InteropClient:
         """
         r = self.session.get(self.url + uri, **kwargs)
         if not r.ok:
-            raise InteropError(r)
+            raise InteropError(r.text)
         return r
 
     def _post(self, uri: str, **kwargs: Any) -> requests.Response:
@@ -74,7 +74,7 @@ class InteropClient:
         """
         r = self.session.post(self.url + uri, **kwargs)
         if not r.ok:
-            raise InteropError(r)
+            raise InteropError(r.text)
         return r
 
     def _put(self, uri: str, **kwargs: Any) -> requests.Response:
@@ -91,7 +91,7 @@ class InteropClient:
         """
         r = self.session.put(self.url + uri, **kwargs)
         if not r.ok:
-            raise InteropError(r)
+            raise InteropError(r.text)
         return r
 
     def _delete(self, uri: str) -> requests.Response:
@@ -105,9 +105,9 @@ class InteropClient:
         Raises:
             InteropError: When the DELETE request returns an error.
         """
-        r = self.session.put(self.url + uri)
+        r = self.session.delete(self.url + uri)
         if not r.ok:
-            raise InteropError(r)
+            raise InteropError(r.text)
         return r
 
     def get_teams(self) -> List[api.TeamStatus]:
