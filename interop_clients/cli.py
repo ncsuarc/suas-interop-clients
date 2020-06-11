@@ -20,27 +20,21 @@ def print_version(ctx, param, value):
     is_eager=True,
 )
 @click.option(
-    "-h",
+    "-u",
     "--host-url",
-    "host",
     required=True,
     type=str,
     help="The host server to connect to.",
 )
 @click.option(
-    "-u",
+    "-n",
     "--username",
-    "username",
     required=True,
     type=str,
     help="The username to connect under.",
 )
 @click.password_option(
-    "-p",
-    "--password",
-    "password",
-    type=str,
-    help="The password for the session.",
+    "-p", "--password", type=str, help="The password for the session.",
 )
 @click.pass_context
 def main(
