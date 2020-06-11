@@ -31,7 +31,9 @@ def upload_odlc(
             io.put_odlc_image(odlc_id, img.read())
 
 
-def odlc_image_pairs(directory: str) -> Iterable[Tuple[str, str]]:
+def odlc_image_pairs(
+    directory: str,
+) -> Iterable[Tuple[str, str, Optional[str]]]:
     odlcs: Dict[str, str] = {}
     images: Dict[str, str] = {}
 
@@ -43,15 +45,15 @@ def odlc_image_pairs(directory: str) -> Iterable[Tuple[str, str]]:
             if ext == ".json":
                 if name in odlcs:
                     raise ValueError(
-                        "Duplicate ODLC files for {}: {} and {}".format(
-                            repr(name), repr(odlcs[name]), repr(entry.path)
-                        )
+                        f"Duplicate ODLC files for {repr(name)}: "
+                        f"{repr(odlcs[name])} and {repr(entry.path)}"
                     )
                 odlcs[name] = entry.path
             elif ext in {".png", ".jpg", ".jpeg"}:
                 if name in images:
                     raise ValueError(
-                        f"Duplicate ODLC images for {repr(name)}: {repr(odlcs[name])} and {repr(entry.path)}"
+                        f"Duplicate ODLC images for {repr(name)}: "
+                        f"{repr(images[name])} and {repr(entry.path)}"
                     )
                 images[name] = entry.path
 
