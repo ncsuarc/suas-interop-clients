@@ -2,7 +2,8 @@ import io
 import json
 import os
 import pprint
-from typing import Dict, Iterable, List, Optional, Tuple
+from pathlib import Path
+from typing import IO, AnyStr, Dict, Iterable, List, Optional, Tuple
 
 import click
 from PIL import Image
@@ -13,63 +14,60 @@ from interop_clients import InteropClient, api
 def update_odlc(
     client: InteropClient,
     odlc_id: api.Id,
-    odlc_path: str,
-    image_path: Optional[str],
+    odlc_path: Path,
+    image_path: Optional[Path],
 ) -> None:
-    with open(odlc_path) as f:
+    with odlc_path.open() as f:
         client.put_odlc(odlc_id, json.load(f))
     if image_path is not None:
-        with open(image_path, "rb") as img:
-            client.put_odlc_image(odlc_id, img.read())
+        client.put_odlc_image(odlc_id, image_path.read_bytes())
 
 
 def upload_odlc(
-    client: InteropClient, odlc_path: str, image_path: Optional[str]
+    client: InteropClient, odlc_path: Path, image_path: Optional[Path]
 ) -> None:
-    with open(odlc_path) as f:
+    with odlc_path.open() as f:
         odlc_id = client.post_odlc(json.load(f))
     if image_path is not None:
-        with open(image_path, "rb") as img:
-            client.put_odlc_image(odlc_id, img.read())
+        client.put_odlc_image(odlc_id, image_path.read_bytes())
 
 
 def odlc_image_pairs(
-    directory: str,
-) -> Iterable[Tuple[str, str, Optional[str]]]:
-    odlcs: Dict[str, str] = {}
-    images: Dict[str, str] = {}
+    directory: Path,
+) -> Iterable[Tuple[str, Path, Optional[Path]]]:
+    odlcs: Dict[str, Path] = {}
+    images: Dict[str, Path] = {}
 
-    with os.scandir(directory) as it:
-        for entry in it:
-            name, ext = os.path.splitext(entry.name)
-            ext = ext.lower()
+    for path in directory.iterdir():
+        name = path.stem
+        ext = path.suffix
 
-            if ext == ".json":
-                if name in odlcs:
-                    raise ValueError(
-                        f"Duplicate ODLC files for {repr(name)}: "
-                        f"{repr(odlcs[name])} and {repr(entry.path)}"
-                    )
-                odlcs[name] = entry.path
-            elif ext in {".png", ".jpg", ".jpeg"}:
-                if name in images:
-                    raise ValueError(
-                        f"Duplicate ODLC images for {repr(name)}: "
-                        f"{repr(images[name])} and {repr(entry.path)}"
-                    )
-                images[name] = entry.path
+        if ext == ".json":
+            if name in odlcs:
+                raise ValueError(
+                    f"Duplicate ODLC for {name}: "
+                    f"'{odlcs[name]}' and '{path}'"
+                )
+            odlcs[name] = path
+        elif ext in {".png", ".jpg", ".jpeg"}:
+            if name in images:
+                raise ValueError(
+                    f"Duplicate ODLC images for {name}: "
+                    f"'{images[name]}' and '{path}'"
+                )
+            images[name] = path
 
     for name, odlc_path in odlcs.items():
         yield name, odlc_path, images.get(name)
 
 
-def update_dir(client: InteropClient, directory: str) -> None:
+def update_dir(client: InteropClient, directory: Path) -> None:
     for name, odlc_path, image_path in odlc_image_pairs(directory):
         odlc_id = api.Id(name)
         update_odlc(client, odlc_id, odlc_path, image_path)
 
 
-def upload_dir(client: InteropClient, directory: str) -> None:
+def upload_dir(client: InteropClient, directory: Path) -> None:
     for _name, odlc_path, image_path in odlc_image_pairs(directory):
         upload_odlc(client, odlc_path, image_path)
 
@@ -82,47 +80,65 @@ def main() -> None:
 
 @main.command("update")
 @click.option("--directory", "-d", "dirs", multiple=True)
-@click.option("--with-thumbnail", "-w", type=(api.Id, str, str), multiple=True)
-@click.option("--no-thumbnail", "-n", type=(api.Id, str), multiple=True)
+@click.option(
+    "--with-thumbnail",
+    "-w",
+    type=(api.Id, click.Path(dir_okay=False), click.Path(dir_okay=False)),
+    multiple=True,
+)
+@click.option(
+    "--no-thumbnail",
+    "-n",
+    type=(api.Id, click.Path(dir_okay=False)),
+    multiple=True,
+)
 @click.pass_context
 def update(
     ctx: click.Context,
-    dirs: List[str],
-    with_thumbnail: List[Tuple[api.Id, str, str]],
-    no_thumbnail: List[Tuple[api.Id, str]],
+    dirs: List[os.PathLike],
+    with_thumbnail: List[Tuple[api.Id, os.PathLike, os.PathLike]],
+    no_thumbnail: List[Tuple[api.Id, os.PathLike]],
 ) -> None:
     client = ctx.obj
     for d in dirs:
-        update_dir(client, d)
+        update_dir(client, Path(d))
     for odlc_id, odlc_path, thumbnail_path in with_thumbnail:
-        update_odlc(client, odlc_id, odlc_path, thumbnail_path)
+        update_odlc(client, odlc_id, Path(odlc_path), Path(thumbnail_path))
     for odlc_id, odlc_path in no_thumbnail:
-        update_odlc(client, odlc_id, odlc_path, None)
+        update_odlc(client, odlc_id, Path(odlc_path), None)
 
 
 @main.command("upload")
 @click.option("--directory", "-d", "dirs", multiple=True)
-@click.option("--with-thumbnail", "-w", type=(str, str), multiple=True)
-@click.option("--no-thumbnail", "-n", type=str, multiple=True)
+@click.option(
+    "--with-thumbnail",
+    "-w",
+    type=(click.Path(dir_okay=False), click.Path(dir_okay=False)),
+    multiple=True,
+)
+@click.option(
+    "--no-thumbnail", "-n", type=click.Path(dir_okay=False), multiple=True
+)
 @click.pass_context
 def upload(
     ctx: click.Context,
     dirs: List[str],
-    with_thumbnail: List[Tuple[str, str]],
-    no_thumbnail: List[str],
+    with_thumbnail: List[Tuple[os.PathLike, os.PathLike]],
+    no_thumbnail: List[os.PathLike],
 ) -> None:
     client = ctx.obj
     for d in dirs:
-        upload_dir(client, d)
+        upload_dir(client, Path(d))
     for odlc_path, thumbnail_path in with_thumbnail:
-        upload_odlc(client, odlc_path, thumbnail_path)
+        upload_odlc(client, Path(odlc_path), Path(thumbnail_path))
     for odlc_path in no_thumbnail:
-        upload_odlc(client, odlc_path, None)
+        upload_odlc(client, Path(odlc_path), None)
 
 
 @main.command("delete")
 @click.argument("ids", type=int, nargs=-1)
 @click.option("--all", "-a", "delete_all", is_flag=True)
+# It's not possible to only delete the info
 @click.option("--image", "-i", "image_only", is_flag=True)
 @click.pass_context
 def delete(
@@ -144,7 +160,7 @@ def delete(
 )
 @click.option("--minify", is_flag=True)
 @click.pass_context
-def info(ctx: click.Context, output: click.File, minify: bool) -> None:
+def info(ctx: click.Context, output: IO[str], minify: bool) -> None:
     client = ctx.obj
     if minify:
         print(client.get_odlcs(), file=output)
@@ -154,7 +170,7 @@ def info(ctx: click.Context, output: click.File, minify: bool) -> None:
 
 @main.command("dump")
 @click.argument(
-    "directory",
+    "output_dir",
     type=click.Path(file_okay=False, dir_okay=True, writable=True),
     default=".",
 )
@@ -164,7 +180,7 @@ def info(ctx: click.Context, output: click.File, minify: bool) -> None:
 @click.pass_context
 def dump(
     ctx: click.Context,
-    directory: os.PathLike,
+    output_dir: os.PathLike,
     info: bool,
     images: bool,
     pretty: bool,
@@ -175,18 +191,19 @@ def dump(
     if not info and not images:
         return
 
+    directory = Path(output_dir)
+
     # We know that directory either doesn't exist or is a writable directory by
     # the guarantees of click.Path
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+    if not directory.exists():
+        directory.mkdir()
 
     for odlc in client.get_odlcs():
         odlc_id = odlc["id"]
 
         if info:
-            with open(
-                os.path.join(directory, f"{odlc_id}.json"), "w"
-            ) as fodlc:
+            info_path = directory / f"{odlc_id}.json"
+            with info_path.open("w") as fodlc:
                 if pretty:
                     pprint.pprint(odlc, stream=fodlc)
                 else:
@@ -195,5 +212,5 @@ def dump(
         if images:
             img_bytes = client.get_odlc_image(odlc_id)
             with Image.open(io.BytesIO(img_bytes)) as img:
-                img_filename = f"{odlc_id}.{img.format.lower()}"
-                img.save(os.path.join(directory, img_filename))
+                img_path = directory / f"{odlc_id}.{img.format.lower()}"
+                img.save(img_path)
