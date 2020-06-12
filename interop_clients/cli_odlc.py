@@ -3,10 +3,10 @@ import json
 import os
 import pprint
 from pathlib import Path
-from typing import IO, AnyStr, Dict, Iterable, List, Optional, Tuple
+from typing import IO, Dict, Iterable, List, Optional, Tuple
 
 import click
-from PIL import Image
+from PIL import Image  # type: ignore
 
 from interop_clients import InteropClient, api
 
