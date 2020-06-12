@@ -40,7 +40,7 @@ def odlc_image_pairs(
 
     for path in directory.iterdir():
         name = path.stem
-        ext = path.suffix
+        ext = path.suffix.lower()
 
         if ext == ".json":
             if name in odlcs:
