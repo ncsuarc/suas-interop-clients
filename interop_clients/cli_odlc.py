@@ -1,10 +1,11 @@
+import io
 import json
 import os
 import pprint
 from typing import Dict, Iterable, List, Optional, Tuple
 
-import PIL
 import click
+from PIL import Image
 
 from interop_clients import InteropClient, api
 
@@ -151,31 +152,48 @@ def info(ctx: click.Context, output: click.File, minify: bool) -> None:
         pprint.pprint(client.get_odlcs(), stream=output)
 
 
-# TODO: Add options to output to file(s)
 @main.command("dump")
-@click.option(
-    "--directory", "-d", type=click.Path(writable=True), default=".",
+@click.argument(
+    "directory",
+    type=click.Path(file_okay=False, dir_okay=True, writable=True),
+    default=".",
 )
-# TODO: Use PIL to automatically determine the extension
-@click.option("--image-extension", "-e", required=True)
-@click.option("--pretty", "-p", is_flag=True)
+@click.option("--info/--no-info", default=True)
+@click.option("--images/--no-images", default=True)
+@click.option("--pretty/--no-pretty", default=False)
 @click.pass_context
 def dump(
     ctx: click.Context,
     directory: os.PathLike,
-    image_extension: str,
+    info: bool,
+    images: bool,
     pretty: bool,
 ) -> None:
     client = ctx.obj
 
+    # Optimization for when we don't have to do anything
+    if not info and not images:
+        return
+
+    # We know that directory either doesn't exist or is a writable directory by
+    # the guarantees of click.Path
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
     for odlc in client.get_odlcs():
         odlc_id = odlc["id"]
-        with open(os.path.join(directory, f"{odlc_id}.json"), "w") as fodlc:
-            if pretty:
-                pprint.pprint(client.get_odlcs(), stream=fodlc)
-            else:
-                print(client.get_odlcs(), file=fodlc)
-        with open(
-            os.path.join(directory, f"{odlc_id}.{image_extension}"), "wb"
-        ) as fimage:
-            fimage.write(client.get_odlc_image(odlc_id))
+
+        if info:
+            with open(
+                os.path.join(directory, f"{odlc_id}.json"), "w"
+            ) as fodlc:
+                if pretty:
+                    pprint.pprint(odlc, stream=fodlc)
+                else:
+                    print(odlc, file=fodlc)
+
+        if images:
+            img_bytes = client.get_odlc_image(odlc_id)
+            with Image.open(io.BytesIO(img_bytes)) as img:
+                img_filename = f"{odlc_id}.{img.format.lower()}"
+                img.save(os.path.join(directory, img_filename))
