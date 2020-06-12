@@ -59,8 +59,8 @@ def get_info(
     save_directory: str,
     csv: str,
 ) -> None:
-    io = ctx.obj
-    tools.get_info.run(io, save, interval, record_time, save_directory, csv)
+    client = ctx.obj
+    tools.get_info.run(client, save, interval, record_time, save_directory, csv)
 
 
 main.add_command(interop_clients.cli_odlc.main, "odlc")

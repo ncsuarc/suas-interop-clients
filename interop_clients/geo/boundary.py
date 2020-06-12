@@ -3,12 +3,12 @@ from osgeo import ogr  # type: ignore
 from interop_clients import InteropClient
 
 
-def check_point(io: InteropClient, lat: float, lon: float) -> bool:
+def check_point(client: InteropClient, lat: float, lon: float) -> bool:
     """
     Check if point is within the boundary of an active mission.
 
     Args:
-        io: The InteropClient object.
+        client: The InteropClient object.
         lat: The float value of your Latitude coordinate.
         lon: The float value of your Longitude coordinate.
 
@@ -18,7 +18,7 @@ def check_point(io: InteropClient, lat: float, lon: float) -> bool:
     target_point = ogr.Geometry(ogr.wkbPoint)
     target_point.AddPoint(lat, lon)
 
-    missions = io.get_missions()
+    missions = client.get_missions()
     for mission in missions:
         if bool(mission.get("active")):
             active_mission = mission

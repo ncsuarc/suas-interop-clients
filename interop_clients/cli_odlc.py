@@ -3,32 +3,33 @@ import os
 import pprint
 from typing import Dict, Iterable, List, Optional, Tuple
 
+import PIL
 import click
 
 from interop_clients import InteropClient, api
 
 
 def update_odlc(
-    io: InteropClient,
+    client: InteropClient,
     odlc_id: api.Id,
     odlc_path: str,
     image_path: Optional[str],
 ) -> None:
     with open(odlc_path) as f:
-        io.put_odlc(odlc_id, json.load(f))
+        client.put_odlc(odlc_id, json.load(f))
     if image_path is not None:
         with open(image_path, "rb") as img:
-            io.put_odlc_image(odlc_id, img.read())
+            client.put_odlc_image(odlc_id, img.read())
 
 
 def upload_odlc(
-    io: InteropClient, odlc_path: str, image_path: Optional[str]
+    client: InteropClient, odlc_path: str, image_path: Optional[str]
 ) -> None:
     with open(odlc_path) as f:
-        odlc_id = io.post_odlc(json.load(f))
+        odlc_id = client.post_odlc(json.load(f))
     if image_path is not None:
         with open(image_path, "rb") as img:
-            io.put_odlc_image(odlc_id, img.read())
+            client.put_odlc_image(odlc_id, img.read())
 
 
 def odlc_image_pairs(
@@ -61,15 +62,15 @@ def odlc_image_pairs(
         yield name, odlc_path, images.get(name)
 
 
-def update_dir(io: InteropClient, directory: str) -> None:
+def update_dir(client: InteropClient, directory: str) -> None:
     for name, odlc_path, image_path in odlc_image_pairs(directory):
         odlc_id = api.Id(name)
-        update_odlc(io, odlc_id, odlc_path, image_path)
+        update_odlc(client, odlc_id, odlc_path, image_path)
 
 
-def upload_dir(io: InteropClient, directory: str) -> None:
+def upload_dir(client: InteropClient, directory: str) -> None:
     for _name, odlc_path, image_path in odlc_image_pairs(directory):
-        upload_odlc(io, odlc_path, image_path)
+        upload_odlc(client, odlc_path, image_path)
 
 
 @click.group()
@@ -89,13 +90,13 @@ def update(
     with_thumbnail: List[Tuple[api.Id, str, str]],
     no_thumbnail: List[Tuple[api.Id, str]],
 ) -> None:
-    io = ctx.obj
+    client = ctx.obj
     for d in dirs:
-        update_dir(io, d)
+        update_dir(client, d)
     for odlc_id, odlc_path, thumbnail_path in with_thumbnail:
-        update_odlc(io, odlc_id, odlc_path, thumbnail_path)
+        update_odlc(client, odlc_id, odlc_path, thumbnail_path)
     for odlc_id, odlc_path in no_thumbnail:
-        update_odlc(io, odlc_id, odlc_path, None)
+        update_odlc(client, odlc_id, odlc_path, None)
 
 
 @main.command("upload")
@@ -109,13 +110,13 @@ def upload(
     with_thumbnail: List[Tuple[str, str]],
     no_thumbnail: List[str],
 ) -> None:
-    io = ctx.obj
+    client = ctx.obj
     for d in dirs:
-        upload_dir(io, d)
+        upload_dir(client, d)
     for odlc_path, thumbnail_path in with_thumbnail:
-        upload_odlc(io, odlc_path, thumbnail_path)
+        upload_odlc(client, odlc_path, thumbnail_path)
     for odlc_path in no_thumbnail:
-        upload_odlc(io, odlc_path, None)
+        upload_odlc(client, odlc_path, None)
 
 
 @main.command("delete")
@@ -126,10 +127,10 @@ def upload(
 def delete(
     ctx: click.Context, ids: List[int], delete_all: bool, image_only: bool
 ) -> None:
-    io = ctx.obj
-    delete = io.delete_odlc_image if image_only else io.delete_odlc
+    client = ctx.obj
+    delete = client.delete_odlc_image if image_only else client.delete_odlc
     if delete_all:
-        for odlc in io.get_odlcs():
+        for odlc in client.get_odlcs():
             delete(odlc["id"])
     else:
         for odlc_id in ids:
@@ -143,11 +144,11 @@ def delete(
 @click.option("--minify", is_flag=True)
 @click.pass_context
 def info(ctx: click.Context, output: click.File, minify: bool) -> None:
-    io = ctx.obj
+    client = ctx.obj
     if minify:
-        print(io.get_odlcs(), file=output)
+        print(client.get_odlcs(), file=output)
     else:
-        pprint.pprint(io.get_odlcs(), stream=output)
+        pprint.pprint(client.get_odlcs(), stream=output)
 
 
 # TODO: Add options to output to file(s)
@@ -165,16 +166,16 @@ def dump(
     image_extension: str,
     pretty: bool,
 ) -> None:
-    io = ctx.obj
+    client = ctx.obj
 
-    for odlc in io.get_odlcs():
+    for odlc in client.get_odlcs():
         odlc_id = odlc["id"]
         with open(os.path.join(directory, f"{odlc_id}.json"), "w") as fodlc:
             if pretty:
-                pprint.pprint(io.get_odlcs(), stream=fodlc)
+                pprint.pprint(client.get_odlcs(), stream=fodlc)
             else:
-                print(io.get_odlcs(), file=fodlc)
+                print(client.get_odlcs(), file=fodlc)
         with open(
             os.path.join(directory, f"{odlc_id}.{image_extension}"), "wb"
         ) as fimage:
-            fimage.write(io.get_odlc_image(odlc_id))
+            fimage.write(client.get_odlc_image(odlc_id))
