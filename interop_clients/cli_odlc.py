@@ -1,9 +1,8 @@
 import io
 import json
 import os
-import pprint
 from pathlib import Path
-from typing import IO, Dict, Iterable, List, Optional, Tuple
+from typing import Dict, Iterable, List, Optional, Tuple
 
 import click
 from PIL import Image  # type: ignore
@@ -155,17 +154,11 @@ def delete(
 
 
 @main.command("info")
-@click.option(
-    "--output", "-o", type=click.File("w"),
-)
-@click.option("--minify", is_flag=True)
 @click.pass_context
-def info(ctx: click.Context, output: IO[str], minify: bool) -> None:
+def info(ctx: click.Context) -> None:
     client = ctx.obj
-    if minify:
-        print(client.get_odlcs(), file=output)
-    else:
-        pprint.pprint(client.get_odlcs(), stream=output)
+    odlcs = client.get_odlcs()
+    click.echo(json.dumps(odlcs, indent=4, sort_keys=True))
 
 
 @main.command("dump")
@@ -205,9 +198,9 @@ def dump(
             info_path = directory / f"{odlc_id}.json"
             with info_path.open("w") as fodlc:
                 if pretty:
-                    pprint.pprint(odlc, stream=fodlc)
+                    json.dump(odlc, fodlc, indent=4, sort_keys=True)
                 else:
-                    print(odlc, file=fodlc)
+                    json.dump(odlc, fodlc)
 
         if images:
             img_bytes = client.get_odlc_image(odlc_id)
