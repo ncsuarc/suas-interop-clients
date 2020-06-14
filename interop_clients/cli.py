@@ -1,7 +1,7 @@
 import click
 
 import interop_clients.cli_odlc
-from interop_clients import InteropClient, tools
+from interop_clients import InteropClient
 
 
 def print_version(ctx, param, value):
@@ -42,27 +42,6 @@ def main(
     ctx: click.Context, host_url: str, username: str, password: str,
 ) -> None:
     ctx.obj = InteropClient(host_url, username, password)
-
-
-@main.command("info")
-@click.argument("save", type=bool)
-@click.argument("interval", type=float)
-@click.argument("record_time", type=int)
-@click.argument("save_directory", type=str)
-@click.argument("csv", type=str)
-@click.pass_context
-def get_info(
-    ctx: click.Context,
-    save: bool,
-    interval: float,
-    record_time: int,
-    save_directory: str,
-    csv: str,
-) -> None:
-    client = ctx.obj
-    tools.get_info.run(
-        client, save, interval, record_time, save_directory, csv
-    )
 
 
 main.add_command(interop_clients.cli_odlc.main, "odlc")
