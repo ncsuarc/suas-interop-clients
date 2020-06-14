@@ -18,7 +18,7 @@ matrix:
     # unstable so we let it fail
     - python: nightly
 install:
-  - sudo apt-get install -y libgdal-dev python-numpy
+  - sudo apt-get install -y libgdal-dev python-numpy swig
   - pip install tox
 script:
   - tox
