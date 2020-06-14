@@ -17,7 +17,7 @@ description = "Alternative interop clients for AUVSI SUAS"
 authors = ["NC State Aerial Robotics Club <aerialroboticsclub@ncsu.edu>"]
 
 [tool.poetry.dependencies]
-python = "^3.5"
+python = "^3.6"
 
 click = "^6.7"
 pillow = "^7.1.2"
