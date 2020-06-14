@@ -23,6 +23,7 @@ pyproj = "^2.4.2"
 python = "^3.6"
 pyzmq = "^18.1.1"
 requests = "^2.22.0"
+typing-extensions = { version = "^3.7.4", markers = "python_version < 3.8" }
 
 # Optional dependencies
 GDAL = { version = "^3.1.0", optional = true }
