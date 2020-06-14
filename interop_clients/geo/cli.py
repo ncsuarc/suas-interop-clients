@@ -18,9 +18,9 @@ def check_point(ctx: click.Context, lat: float, lon: float) -> None:
     """
     Check if LAT and LON are within active mission boundaries.
     """
-    io = ctx.obj
+    client = ctx.obj
     click.echo("Is the point within the boundaries? ", nl=False)
-    if boundary.check_point(io, lat, lon):
+    if boundary.check_point(client, lat, lon):
         click.secho("Yes", fg="blue")
     else:
         click.secho("No", fg="red")

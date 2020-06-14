@@ -7,7 +7,7 @@ from interop_clients import InteropClient
 
 
 def run(
-    io: InteropClient,
+    client: InteropClient,
     save: bool,
     interval: float,
     record_time: int,
@@ -29,7 +29,7 @@ def run(
     else:
         saveData = False
 
-    mission = io.get_missions()
+    mission = client.get_missions()
     if saveData:
         if not os.path.isdir(saveDir):
             if os.path.exists(saveDir):

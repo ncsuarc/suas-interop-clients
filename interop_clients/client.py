@@ -159,18 +159,20 @@ class InteropClient:
         """
         return self._get(f"/api/odlcs/{odlc_id}").json()
 
-    def post_odlc(self, odlc: api.Odlc) -> None:
+    def post_odlc(self, odlc: api.NewOdlc) -> api.Id:
         """POST odlc.
 
-        This gets the image ID, content, and all other required information
-        from `odlc`.
+        This is for posting new ODLCs.
+
+        TODO: Fact check this info
 
         Args:
-            odlc: Dict of odlc information to post.
+            odlc: Dict of odlc information to post. Must not contain "id"
+            because that will be filled in by the server.
         Returns:
-            odlc dict with given ID.
+            ID assigned to the given ODLC.
         """
-        self._post(f"/api/odlcs", json=odlc)
+        return self._post("/api/odlcs", json=odlc).json()["id"]
 
     def put_odlc(self, odlc_id: api.Id, odlc: api.Odlc) -> None:
         """PUT odlc.
@@ -178,6 +180,7 @@ class InteropClient:
         Args:
             odlc_id: ID of odlc to update.
             odlc: Next dict of odlc details. Missing keys are left unchanged.
+            The ODLC ID must agree.
         """
         self._put(f"/api/odlcs/{odlc_id}", json=odlc)
 
@@ -198,17 +201,6 @@ class InteropClient:
             Raw thumbnail data for given odlc.
         """
         return self._get(f"/api/odlcs/{odlc_id}/image").content
-
-    def post_odlc_image(self, odlc_id: api.Id, image_data: bytes) -> None:
-        """PUT odlc.
-
-        `image_data` must be either a PNG or a JPG.
-
-        Args:
-            odlc_id: ID of odlc for which to upload image_data.
-            image_data: Raw image bytes to upload.
-        """
-        self.put_odlc_image(odlc_id, image_data)
 
     def put_odlc_image(self, odlc_id: api.Id, image_data: bytes) -> None:
         """PUT odlc.
