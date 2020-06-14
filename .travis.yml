@@ -18,6 +18,7 @@ matrix:
     # unstable so we let it fail
     - python: nightly
 install:
+  - sudo apt-get install libgdal-dev
   - pip install tox
 script:
   - tox
