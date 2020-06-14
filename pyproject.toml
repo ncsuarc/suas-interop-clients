@@ -6,6 +6,9 @@ include = '\.pyi?$'
 # Make isort agree with black
 multi_line_output = 3
 include_trailing_comma = true
+# GDAL is an option and we don't install options (because GDAL is hard to
+# install), but we still want isort to be right.
+known_third_party = ["osgeo"]
 
 [tool.poetry]
 name = "interop_clients"
@@ -14,26 +17,26 @@ description = "Alternative interop clients for AUVSI SUAS"
 authors = ["NC State Aerial Robotics Club <aerialroboticsclub@ncsu.edu>"]
 
 [tool.poetry.dependencies]
-click = "^6.7"
-pyproj = "^2.4.2"
 python = "^3.6"
-pyzmq = "^18.1.1"
+
+click = "^6.7"
+pillow = "^7.1.2"
 requests = "^2.22.0"
+typing-extensions = { version = "^3.7.4", markers = "python_version < '3.8'" }
 
 # Optional dependencies
 GDAL = { version = "^3.1.0", optional = true }
-pillow = "^7.1.2"
 
 [tool.poetry.extras]
 geo = ["GDAL"]
 
 [tool.poetry.dev-dependencies]
-pytest = "^3.0"
 black = "^19.3b0"
 flake8 = "^3.7.9"
+flake8-bugbear = "^20.1.0"
 isort = "^4.3.21"
 mypy = "^0.761"
-flake8-bugbear = "^20.1.0"
+pytest = "^3.0"
 tox = "^3.15.2"
 
 [tool.poetry.scripts]
