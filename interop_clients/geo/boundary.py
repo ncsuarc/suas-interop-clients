@@ -1,6 +1,6 @@
 from osgeo import ogr  # type: ignore
 
-from interop_clients import InteropClient, api
+from interop_clients import api
 
 
 def in_search_grid(mission: api.Mission, lat: float, lon: float) -> bool:
