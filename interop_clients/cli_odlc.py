@@ -5,9 +5,9 @@ from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Tuple
 
 import click
+from PIL import Image  # type: ignore
 
 from interop_clients import InteropClient, api
-from PIL import Image  # type: ignore
 
 
 def update_odlc(
