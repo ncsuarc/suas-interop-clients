@@ -2,7 +2,11 @@ name: suas-interop-clients CI Build
 
 on:
   push:
+    branches:
+      - master
   pull_request:
+    branches:
+      - master
   schedule:
     # Build on the first day of every month to ensure upgrades haven't broken
     # us
@@ -29,7 +33,7 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
-    name: Lint using ${{ join(matrix.linter.pkg) }}
+    name: Lint with ${{ join(matrix.linter.pkg, ', ') }}
     strategy:
       matrix:
         linter:
