@@ -1,4 +1,4 @@
-# interop_clients
+# suas-interop-clients
 
 [![Build Status](https://travis-ci.com/ncsuarc/interop_clients.svg?branch=master)](https://travis-ci.com/ncsuarc/interop_clients)
 
