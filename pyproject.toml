@@ -11,10 +11,15 @@ include_trailing_comma = true
 known_third_party = ["osgeo"]
 
 [tool.poetry]
-name = "interop_clients"
+name = "suas-interop-clients"
 version = "0.1.2"
 description = "Alternative interop clients for AUVSI SUAS"
 authors = ["NC State Aerial Robotics Club <aerialroboticsclub@ncsu.edu>"]
+# We don't strictly follow Poetry standards for historical reasons. If we did
+# this project would be called `suas_interop_clients`.
+packages = [
+    { include = "interop_clients" },
+]
 
 [tool.poetry.dependencies]
 python = "^3.6"
