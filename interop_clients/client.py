@@ -220,3 +220,31 @@ class InteropClient:
             odlc_id: ID of odlc which is being deleted.
         """
         self._delete(f"/api/odlcs/{odlc_id}/image")
+
+    def get_map_image(self, mission_id: api.Id):
+        """GET map image.
+
+        Args:
+            mission_id: The mission for which to get the uploaded map.
+
+        Returns:
+            The image data that was previously uploaded.
+        """
+        return self._get(f"/api/maps/{mission_id}/{self.username}").content
+
+    def put_map_image(self, mission_id: api.Id, image_data: bytes):
+        """PUT map image. Image must be PNG or JPEG data.
+
+        Args:
+            mission_id: The mission for which to upload a map.
+            image_data: The image data (bytes loaded from file) to upload.
+        """
+        self._put(f"/api/maps/{mission_id}/{self.username}", data=image_data)
+
+    def delete_map_image(self, mission_id: api.Id):
+        """DELETE map image.
+
+        Args:
+            mission_id: The mission for which to delete an uploaded a map.
+        """
+        self._delete(f"/api/maps/{mission_id}/{self.username}")
