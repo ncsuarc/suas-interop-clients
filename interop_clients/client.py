@@ -37,6 +37,7 @@ class InteropClient:
         """
         self.session = requests.Session()
         self.url = url
+        self.username = username
 
         self._post(
             "/api/login",
