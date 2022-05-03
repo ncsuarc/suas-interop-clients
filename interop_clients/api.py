@@ -151,3 +151,5 @@ class Mission(TypedDict):
     air_drop_pos: Position
     ugv_drive_pos: Position
     stationary_obstacles: List[StationaryObstacle]
+    map_center_pos: Position
+    map_height: float
