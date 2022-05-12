@@ -1,6 +1,6 @@
 import click
 
-import interop_clients.cli_odlc
+from interop_clients import cli_odlc, cli_telem
 from interop_clients import InteropClient
 
 
@@ -35,16 +35,17 @@ def print_version(ctx, param, value):
     help="The username to connect under.",
 )
 @click.password_option(
-    "-p", "--password", type=str, help="The password for the session.",
+    "-p", "--password", type=str, help="The password for the session."
 )
 @click.pass_context
 def main(
-    ctx: click.Context, host_url: str, username: str, password: str,
+    ctx: click.Context, host_url: str, username: str, password: str
 ) -> None:
     ctx.obj = InteropClient(host_url, username, password)
 
 
-main.add_command(interop_clients.cli_odlc.main, "odlc")
+main.add_command(cli_odlc.main, "odlc")
+main.add_command(cli_telem.main, "telem")
 
 
 try:
