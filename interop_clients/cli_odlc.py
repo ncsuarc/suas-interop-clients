@@ -11,7 +11,7 @@ from interop_clients import InteropClient, api
 
 
 def update_odlc(
-    client: InteropClient, odlc_path: Path, image_path: Optional[Path],
+    client: InteropClient, odlc_path: Path, image_path: Optional[Path]
 ) -> None:
     with odlc_path.open() as f:
         odlc = json.load(f)
