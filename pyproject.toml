@@ -27,7 +27,7 @@ python = "^3.6"
 click = "^6.7"
 pillow = "^7.1.2"
 requests = "^2.22.0"
-dronekit
+dronekit = "2.9.2"
 typing-extensions = { version = "^3.7.4", markers = "python_version < '3.8'" }
 
 # Optional dependencies
