@@ -30,3 +30,5 @@ here, but use `poetry run` to run one-off commands in your virtualenv and
 `poetry shell` to activate your virtualenv.
 
 [poetry]: https://python-poetry.org/
+
+**Archived as SUAS has depreciated the usage of interop as of the 2023 competition.**
